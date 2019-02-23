@@ -1,20 +1,20 @@
-# coding: utf-8
+from os import path as op
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
-URL = "https://github.com/cuducos/alchemydumps"
-LONG_DESCRIPTION = "Check `Flask-AlchemyDumps at GitHub <{}>`_.".format(URL)
+basedir = op.abspath(op.dirname(__file__))
+
 
 setup(
     name="Flask-AlchemyDumps",
-    version="0.0.20",
+    packages=["flask_alchemydumps"],
+    version=open(op.join(basedir, "VERSION")).read().strip(),
     description="SQLAlchemy backup/dump tool for Flask",
-    long_description=LONG_DESCRIPTION,
+    long_description=open(op.join(basedir, "README.md")).read(),
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD 3-Clause License",
         "Framework :: Flask",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Intended Audience :: Developers",
         "Topic :: Database",
@@ -22,12 +22,13 @@ setup(
         "Topic :: Utilities",
     ],
     keywords="backup, sqlalchemy, flask, restore, dumps, serialization, ftp, ",
-    url=URL,
+    url="https://gitlab.com/lesleslie/alchemydumps",
     author="Eduardo Cuducos",
     author_email="cuducos@gmail.com",
-    license="MIT",
-    packages=find_packages(exclude=["tests"]),
-    install_requires=["Flask>=1.0.2", "SQLAlchemy", "python-decouple"],
+    maintainer="Les Leslie",
+    maintainer_email="les@wedgwoodwebworks.com",
+    license="BSD 3-Clause",
     include_package_data=True,
-    zip_safe=False,
+    test_suite="pytest",
+    entry_points={"console_scripts": ["alchemydumps.cli:alchemydumps"]},
 )
