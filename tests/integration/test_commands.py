@@ -5,8 +5,8 @@ from shutil import rmtree
 from unittest import TestCase
 from tempfile import mkdtemp
 
-from flask_alchemydumps import create, history, restore, remove, autoclean
-from flask_alchemydumps.backup import Backup, LocalTools
+from alchemydumps import create, history, restore, remove, autoclean
+from alchemydumps.backup import Backup, LocalTools
 
 from .app import Comments, Post, SomeControl, User, app, db
 

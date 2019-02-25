@@ -4,6 +4,9 @@ from os import listdir, mkdir, path as op, remove, sep
 from re import search
 from tempfile import NamedTemporaryFile
 from time import gmtime, strftime
+from dataclasses import dataclass, field
+from typing import Generator
+from ftplib import FTP
 
 
 class StorageTools(object):
@@ -27,117 +30,97 @@ class StorageTools(object):
         return date_parsed.strftime("%b %d, %Y at %H:%M:%S")
 
 
+@dataclass
 class Storage(StorageTools):
-    pass
-
-
-class LocalStorage(Storage):
-    """Manage backup directory and files in local file system"""
-
-    def __init__(self, backup_path):
-        self.path = self.normalize_path(backup_path)
+    path: str
 
     @staticmethod
-    def normalize_path(path):
-        """
-        Creates the backup directory (if needed) and returns its absolute path
-        :return: (str) Absolue path to the backup directory
-        """
+    def normalize_path(path: str) -> str:
+        pass
+
+    def get_files(self) -> Generator:
+        pass
+
+    def create_file(self, name: str, contents: bytes) -> str:
+        pass
+
+    def read_file(self, name: str):
+        pass
+
+    def delete_file(self, name: str) -> None:
+        pass
+
+
+@dataclass
+class LocalStorage(Storage):
+    backup_path: str
+
+    # def __init__(self, backup_path):
+    #     self.path = self.normalize_path(backup_path)
+
+    @staticmethod
+    def normalize_path(path: str) -> str:
         if not op.exists(path):
             mkdir(path)
         return op.abspath(path) + sep
 
-    def get_files(self):
-        """List all files in the backup directory"""
+    def get_files(self) -> Generator:
         for name in listdir(self.path):
             is_file = op.isfile(op.join(self.path, name))
             has_timestamp = self.get_timestamp(name)
             if is_file and has_timestamp:
                 yield name
 
-    def create_file(self, name, contents):
-        """
-        Creates a gzip file
-        :param name: (str) Name of the file to be created (without path)
-        :param contents: (bytes) Contents to be written in the file
-        :return: (str) path of the created file
-        """
+    def create_file(self, name: str, contents: bytes) -> str:
         file_path = op.join(self.path, name)
         with gzip.open(file_path, "wb") as handler:
             handler.write(contents)
         return file_path
 
-    def read_file(self, name):
-        """
-        Reads the contents of a gzip file
-        :param name: (str) Name of the file to be read (without path)
-        :return: (bytes) Content of the file
-        """
+    def read_file(self, name: str) -> bytes:
         file_path = op.join(self.path, name)
         with gzip.open(file_path, "rb") as handler:
             return handler.read()
 
-    def delete_file(self, name):
-        """
-        Delete a file
-        :param name: (str) Name of the file to be deleted (without path)
-        """
+    def delete_file(self, name: str) -> None:
         remove(op.join(self.path, name))
 
 
+@dataclass
 class FtpStorage(Storage):
-    """Manage backup files in a remote file system via FTP"""
-
-    def __init__(self, ftp):
-        """Receives a Python FTP class instance"""
-        self.ftp = ftp
-        self.path = self.normalize_path()
+    ftp: FTP
+    path: str
 
     def normalize_path(self):
         """Add missing slash to the end of the FTP url to be used in stdout"""
         url = "ftp://{}{}".format(self.ftp.host, self.ftp.pwd())
         return url if url.endswith("/") else url + "/"
 
-    def get_files(self):
+    def get_files(self) -> Generator:
         """List all files in the backup directory"""
         files = self.ftp.nlst()
         for name in files:
             if self.get_timestamp(name):
                 yield name
 
-    def create_file(self, name, contents):
-        """
-        Creates a gzip file
-        :param name: (str) Name of the file to be created (without path)
-        :param contents: (bytes) Contents to be written in the file
-        :return: (str) path of the created file
-        """
-        # write a tmp file
+    def create_file(self, name: str, contents: bytes) -> str:
+        path = self.normalize_path()
         tmp = NamedTemporaryFile()
         with gzip.open(tmp.name, "wb") as handler:
             handler.write(contents)
 
         # send it to the FTP server
         self.ftp.storbinary("STOR {}".format(name), open(tmp.name, "rb"))
-        return "{}{}".format(self.path, name)
+        return "{}{}".format(path, name)
 
-    def read_file(self, name):
-        """
-        Reads the contents of a gzip file
-        :param name: (str) Name of the file to be read (without path)
-        :return: (bytes) Content of the file
-        """
+    def read_file(self, name: str) -> bytes:
         tmp = NamedTemporaryFile()
         with open(tmp.name, "wb") as handler:
             self.ftp.retrbinary("RETR {}".format(name), handler.write)
         with gzip.open(tmp.name, "rb") as handler:
             return handler.read()
 
-    def delete_file(self, name):
-        """
-        Delete a file
-        :param name: (str) Name of the file to be deleted (without path)
-        """
+    def delete_file(self, name: str) -> None:
         self.ftp.delete(name)
 
 

@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from flask_alchemydumps.confirm import Confirm
+from alchemydumps.confirm import Confirm
 
 
 try:

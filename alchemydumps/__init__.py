@@ -1,14 +1,15 @@
 # coding: utf-8
 
 from os import path as op, system
+from dataclasses import dataclass
 
 import click
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
-from flask_alchemydumps.autoclean import BackupAutoClean
-from flask_alchemydumps.backup import Backup
-from flask_alchemydumps.confirm import Confirm
-from flask_alchemydumps.database import AlchemyDumpsDatabase
+from alchemydumps.autoclean import BackupAutoClean
+from alchemydumps.backup import Backup
+from alchemydumps.confirm import Confirm
+from alchemydumps.database import AlchemyDumpsDatabase
 
 
 # from unipath import Path
@@ -19,13 +20,13 @@ def alchemydumps():
     """Perform database backup or restore."""
     pass
 
-
+@dataclass
 class _AlchemyDumpsConfig(object):
     def __init__(self, db=None, basedir=""):
         self.db = db
         self.basedir = op.abspath(op.dirname(__file__))
 
-
+@dataclass
 class AlchemyDumps(object):
     def __init__(self, app=None, db=None, basedir=""):
         if app is not None and db is not None:
@@ -88,9 +89,7 @@ def history():
     "--date",
     dest="date_id",
     default=False,
-    help="The date part of a file from the AlchemyDumps\
-                                 folder",
-)
+    help="The date part of a file from the AlchemyDumps folder")
 def restore(date_id):
     """Restore a backup based on the date part of the backup files"""
 
@@ -134,8 +133,7 @@ def restore(date_id):
     "--date",
     dest="date_id",
     default=False,
-    help="The date part of a file from the AlchemyDumps\
-                                 folder",
+    help="The date part of a file from the AlchemyDumps folder",
 )
 @click.option(
     "-y",

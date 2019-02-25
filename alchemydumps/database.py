@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from flask import current_app
+# from flask import current_app
 from sqlalchemy.ext.serializer import dumps, loads
 
 
@@ -8,10 +8,13 @@ class AlchemyDumpsDatabase(object):
     def __init__(self):
         self.do_not_backup = list()
         self.models = list()
+        self.session = None
+        self.db = None
 
     @staticmethod
-    def db():
-        return current_app.extensions["alchemydumps"].db
+    def db(self):
+        return self.db
+        # return current_app.extensions["alchemydumps"].db
 
     def get_mapped_classes(self):
         """Gets a list of SQLALchemy mapped classes"""

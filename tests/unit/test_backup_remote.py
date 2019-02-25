@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from flask_alchemydumps.backup import RemoteTools
+from alchemydumps.backup import RemoteTools
 
 
 # Python 2 and 3 compatibility (mock)

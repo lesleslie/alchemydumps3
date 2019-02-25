@@ -6,15 +6,14 @@ basedir = op.abspath(op.dirname(__file__))
 
 
 setup(
-    name="Flask-AlchemyDumps",
-    packages=["flask_alchemydumps"],
+    name="AlchemyDumps",
+    packages=["alchemydumps"],
     version=open(op.join(basedir, "VERSION")).read().strip(),
-    description="SQLAlchemy backup/dump tool for Flask",
+    description="SQLAlchemy backup/dump",
     long_description=open(op.join(basedir, "README.md")).read(),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: BSD 3-Clause License",
-        "Framework :: Flask",
         "Programming Language :: Python :: 3.7",
         "Intended Audience :: Developers",
         "Topic :: Database",
@@ -30,5 +29,6 @@ setup(
     license="BSD 3-Clause",
     include_package_data=True,
     test_suite="pytest",
-    entry_points={"console_scripts": ["alchemydumps.cli:alchemydumps"]},
+    entry_points={"console_scripts": [
+        "alchemydumps=alchemydumps.cli:alchemydumps"]},
 )
