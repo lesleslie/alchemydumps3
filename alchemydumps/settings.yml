@@ -1,7 +1,10 @@
+storage:
 local_dir:
 prefix:
 ftp_server:
 ftp_user:
 ftp_password:
 ftp_path:
-
+s3_bucket_name:
+s3_bucket_domain:
+s3_bucket_path:

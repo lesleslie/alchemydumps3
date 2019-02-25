@@ -1,84 +1,33 @@
 # coding: utf-8
-
+from arrow import utcnow
+from os import path as op, getcwd
+from re import search
+from pathlib import Path
 from ftplib import FTP, error_perm
 from dataclasses import dataclass, field
 from alchemydumps.storage import FtpStorage, LocalStorage
-from typing import Dict, List, Generator, Union
-
-from yaml import dump, load
-from yamlordereddictloader import Loader, SafeDumper
-
-
-def load_settings(settings_file: str) -> dict:
-    with open(settings_file, "r+") as f:
-        settings = load(f, Loader=Loader)
-        f.seek(0)
-        f.truncate()
-        dump(settings, f, Dumper=SafeDumper)  # this will reformat yml file
-        f.close()  # do not trust `with` to close our file - close immediately
-    return settings
+from alchemydumps.utils import pprint
+from typing import Dict, List, Generator, Union, Any
+from alchemydumps.config import LocalConfig, config
 
 
-@dataclass
-class DefaultConfig(object):
-    local_dir: str = 'alchemydumps-backup'
-    prefix: str = 'db-backup'
-    ftp_server: str = None
-    ftp_user: str = None
-    ftp_password: str = None
-    ftp_path: str = None
 
-
-@dataclass
-class Config(DefaultConfig):
-    settings_file: str = None
-
-    def __post_init__(self):
-        settings = load_settings(self.settings_file)
-        for k, v in settings:
-            self.__dict__[k] = v
-
-def get_backup_config():
-    return globals()['Backup'].config
-
-def config():
-    def get_config(func):
-        func.__globals__['c'] = get_backup_config
-        return func
-    return get_config
 
 
 @dataclass
 class Backup(object):
-    settings_file: str = None
+    settings_type: str = 'yaml'
     files: list = None
+    storage: classmethod = None
+    settings: classmethod = LocalConfig
 
     def __post_init__(self):
+        self.conf = self.settings()
         self.target = self.get_target()
-        self.config = Config(self.settings_file)
         self.ftp = self.ftp_connect()
 
-
-
-    # settings = Dict[load_settings(settings_file)]
-
-    # def config(self):
-    #     c = Config(self.settings)
-    # return c
-
-    # def __init__(self):
-    #     """
-    #     Bridge backups to local file system or to FTP server according to env
-    #     vars set to allow FTP usage (see connect method).
-    #     """
-    #     self.ftp = self.ftp_connect()
-    #     self.dir = config.dir
-    #     self.prefix = config("ALCHEMYDUMPS_PREFIX", default=self.PRE)
-    #     self.files = None
-    #     self.target = self.get_target()
-
-    @config()
-    def ftp_connect(self, c) -> Union[FTP, bool]:
+    @config
+    def ftp_connect(self) -> Union[FTP, bool]:
         if c.ftp_server and c.ftp_user:
             try:
                 ftp = FTP(c.ftp_server, c.ftp_user, c.ftp_password)
@@ -106,10 +55,18 @@ class Backup(object):
         if self.ftp:
             self.ftp.quit()
 
-    @config()
-    def get_target(self, ftp: FTP) -> Union[FTP, LocalStorage]:
-        """Returns the object to manage backup files (Local or Remote)"""
-        return FtpStorage(ftp, c.ftp_path) if ftp else LocalStorage(c.local_dir)
+    @config
+    def get_target(self) -> Union[FtpStorage, LocalStorage]:
+        if type(self.storage) == FTP:
+            return FtpStorage(self.ftp, backup_path=c.ftp_path)
+        else:
+            return LocalStorage(backup_path=c.local_dir)
+
+    @staticmethod
+    def get_timestamp(name):
+        pattern = r"(.*)(-)(?P<timestamp>[\d]{10})(-)(.*)"
+        match = search(pattern, name)
+        return match.group("timestamp") if match else False
 
     def get_timestamps(self):
         """
@@ -148,15 +105,14 @@ class Backup(object):
         print('==> Invalid id. Use "history" to list existing downloads')
         return False
 
-    @config()
     def get_name(self, class_name, timestamp=None):
         """
         Gets a backup file name given the timestamp and the name of the
         SQLAlchemy mapped class.
         """
-        timestamp = timestamp or self.target.TIMESTAMP
+        timestamp = timestamp or utcnow().timestamp
         return "{}-{}-{}.gz".format(c.prefix, timestamp, class_name)
 
 
-if __name__ == '__main__':
-    pass
+if __name__ == "__main__":
+    Backup(settings=YamlConfig)

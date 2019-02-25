@@ -11,6 +11,8 @@ yamlordereddictloader = "*"
 pyyaml = "*"
 click = "*"
 sqlalchemy = "*"
+flask = "*"
+arrow = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,25 +1,35 @@
 # coding: utf-8
 
-# from flask import current_app
+from flask import current_app
 from sqlalchemy.ext.serializer import dumps, loads
+from dataclasses import dataclass, field
+from typing import List, Any
+
+# from sqlalchemy import Column, Integer, MetaData, create_engine, inspect
+# from sqlalchemy.exc import IntegrityError, InvalidRequestError, NoInspectionAvailable
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
+# from sqlalchemy.ext.serializer import dumps as sdumps, loads as sloads
+# from sqlalchemy.orm import Query, sessionmaker, scoped_session
+# from sqlalchemy.orm.exc import UnmappedInstanceError
+# from sqlalchemy.pool import NullPool
 
 
+@dataclass
 class AlchemyDumpsDatabase(object):
-    def __init__(self):
-        self.do_not_backup = list()
-        self.models = list()
-        self.session = None
-        self.db = None
+    do_not_backup: List = field(default_factory=list())
+    models: List = field(default_factory=list())
+    session: Any = None
+    is_flask: bool = True
+    base_class: declarative_base() = None
 
     @staticmethod
-    def db(self):
-        return self.db
-        # return current_app.extensions["alchemydumps"].db
+    def db():
+        return current_app.extensions["alchemydumps"].db
 
     def get_mapped_classes(self):
         """Gets a list of SQLALchemy mapped classes"""
         db = self.db()
-        self.add_subclasses(db.Model)
+        self.add_subclasses(db.Model)  # change to allow other declarative_bases
         return self.models
 
     def add_subclasses(self, model):

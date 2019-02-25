@@ -1,7 +1,8 @@
 # coding: utf-8
 
 from os import path as op, system
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
 
 import click
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
@@ -20,22 +21,28 @@ def alchemydumps():
     """Perform database backup or restore."""
     pass
 
+
 @dataclass
 class _AlchemyDumpsConfig(object):
-    def __init__(self, db=None, basedir=""):
-        self.db = db
-        self.basedir = op.abspath(op.dirname(__file__))
+    db: Any = None
+    basedir: str = field(default_factory=op.abspath(op.dirname(__file__)))
+
+
 
 @dataclass
 class AlchemyDumps(object):
-    def __init__(self, app=None, db=None, basedir=""):
-        if app is not None and db is not None:
-            self.init_app(app, db, basedir)
+    app: Any = None
+    db: Any = None
+    basedir: str = ""
+
+    def __post_init__(self):
+        if self.app is not None and self.db is not None:
+            self.init_app(self.app, self.db, self.basedir)
 
     @staticmethod
     def init_app(app, db, basedir=""):
         if not hasattr(app, "extensions"):
-            app.extensions = {}
+            app.extensions = dict()
         app.extensions["alchemydumps"] = _AlchemyDumpsConfig(db, basedir)
 
 
@@ -52,9 +59,11 @@ def create():
         full_path = backup.target.create_file(name, data[class_name])
         rows = len(alchemy.parse_data(data[class_name]))
         if full_path:
-            print("==> {} rows from {} saved as {}".format(rows, class_name, full_path))
+            print("==> {} rows from {} saved as {}".format(rows, class_name,
+                                                           full_path))
         else:
-            print("==> Error creating {} at {}".format(name, backup.target.path))
+            print(
+                "==> Error creating {} at {}".format(name, backup.target.path))
     backup.close_ftp()
 
 
@@ -87,7 +96,7 @@ def history():
 @click.option(
     "-d",
     "--date",
-    dest="date_id",
+    # dest="date_id",
     default=False,
     help="The date part of a file from the AlchemyDumps folder")
 def restore(date_id):
@@ -131,15 +140,15 @@ def restore(date_id):
 @click.option(
     "-d",
     "--date",
-    dest="date_id",
+    # dest="date_id",
     default=False,
     help="The date part of a file from the AlchemyDumps folder",
 )
 @click.option(
     "-y",
     "--assume-yes",
-    dest="assume_yes",
-    action="store_true",
+    # dest="assume_yes",
+    # action="store_true",
     default=False,
     help="Assume `yes` for all prompts",
 )
@@ -169,8 +178,8 @@ def remove(date_id, assume_yes=False):
 @click.option(
     "-y",
     "--assume-yes",
-    dest="assume_yes",
-    action="store_true",
+    # dest="assume_yes",
+    # action="store_true",
     default=False,
     help="Assume `yes` for all prompts",
 )
