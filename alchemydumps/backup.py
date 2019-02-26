@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from ftplib import FTP, error_perm
 from re import search
-from typing import Union
+from typing import List, Union
 
 from arrow import utcnow
 
@@ -64,7 +64,7 @@ class Backup(object):
         match = search(pattern, name)
         return match.group("timestamp") if match else False
 
-    def get_timestamps(self):
+    def get_timestamps(self, files: List) -> List:
         """
         Gets the different existing timestamp numeric IDs
         :param files: (list) List of backup file names
