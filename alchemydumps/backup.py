@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from alchemydumps.storage import FtpStorage, LocalStorage
 from alchemydumps.utils import pprint
 from typing import Dict, List, Generator, Union, Any
-from alchemydumps.config import LocalConfig, config
+from alchemydumps.config import DefaultLoader, config
 
 
 
@@ -19,7 +19,7 @@ class Backup(object):
     settings_type: str = 'yaml'
     files: list = None
     storage: classmethod = None
-    settings: classmethod = LocalConfig
+    settings: classmethod = DefaultLoader
 
     def __post_init__(self):
         self.conf = self.settings()
@@ -115,4 +115,4 @@ class Backup(object):
 
 
 if __name__ == "__main__":
-    Backup(settings=YamlConfig)
+    Backup(settings=DefaultLoader)

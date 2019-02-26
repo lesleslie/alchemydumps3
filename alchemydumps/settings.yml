@@ -1,5 +1,5 @@
 storage:
-local_dir:
+local_path:
 prefix:
 ftp_server:
 ftp_user:

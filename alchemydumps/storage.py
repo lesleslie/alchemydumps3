@@ -57,7 +57,7 @@ class Storage(object):
 
 @dataclass
 class LocalStorage(Storage):
-    local_dir: str = "alchemydumps-backup"
+    local_path: str = "alchemydumps-backup"
 
     @staticmethod
     def normalize_path(path: str) -> str:
@@ -66,25 +66,25 @@ class LocalStorage(Storage):
         return op.abspath(path) + sep
 
     def get_files(self) -> Generator:
-        for name in listdir(self.path):
-            is_file = op.isfile(op.join(self.path, name))
+        for name in listdir(self.backup_path):
+            is_file = op.isfile(op.join(self.local_path, name))
             has_timestamp = self.get_timestamp(name)
             if is_file and has_timestamp:
                 yield name
 
     def create_file(self, name: str, contents: bytes) -> str:
-        file_path = op.join(self.path, name)
+        file_path = op.join(self.local_path, name)
         with gzip.open(file_path, "wb") as handler:
             handler.write(contents)
         return file_path
 
     def read_file(self, name: str) -> bytes:
-        file_path = op.join(self.path, name)
+        file_path = op.join(self.local_path, name)
         with gzip.open(file_path, "rb") as handler:
             return handler.read()
 
     def delete_file(self, name: str) -> None:
-        remove(op.join(self.path, name))
+        remove(op.join(self.local_path, name))
 
 
 @dataclass
