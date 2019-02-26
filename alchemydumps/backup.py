@@ -1,17 +1,13 @@
 # coding: utf-8
-from arrow import utcnow
-from os import path as op, getcwd
-from re import search
-from pathlib import Path
+from dataclasses import dataclass
 from ftplib import FTP, error_perm
-from dataclasses import dataclass, field
-from alchemydumps.storage import FtpStorage, LocalStorage
-from alchemydumps.utils import pprint
-from typing import Dict, List, Generator, Union, Any
+from re import search
+from typing import Union
+
+from arrow import utcnow
+
 from alchemydumps.config import DefaultLoader, config
-
-
-
+from alchemydumps.storage import FtpStorage, LocalStorage
 
 
 @dataclass
