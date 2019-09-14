@@ -1,26 +1,30 @@
-# AlchemyDumps [![Latest release](https://img.shields.io/pypi/v/Flask-AlchemyDumps.svg?style=flat)](https://pypi.python.org/pypi/Flask-AlchemyDumps)
+# AlchemyDumps 
 
+[![Python: 3.7](https://img.shields.io/badge/python-3.7%2B-blue)](https://docs.python.org/3/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Code style: crackerjack](https://img.shields.io/badge/code%20style-crackerjack-000042)](https://github.com/lesleslie/crackerjack)
 
 This fork is under re-construction and will most likely not work. Stay tuned!
-
+<!--
 [![Development Status: Alpha](https://img.shields.io/pypi/status/Flask-AlchemyDumps.svg?style=flat)](https://pypi.python.org/pypi/Flask-AlchemyDumps)
+[![Latest release](https://img.shields.io/pypi/v/Flask-AlchemyDumps.svg?style=flat)](https://pypi.python.org/pypi/Flask-AlchemyDumps)
 [![Python Version](https://img.shields.io/pypi/pyversions/Flask-AlchemyDumps.svg)](https://pypi.python.org/pypi/Flask-AlchemyDumps)
 [![Travis CI](https://img.shields.io/travis/cuducos/alchemydumps.svg?style=flat)](https://travis-ci.org/cuducos/alchemydumps)
 [![Coverage Status](https://coveralls.io/repos/github/cuducos/alchemydumps/badge.svg?branch=master)](https://coveralls.io/github/cuducos/alchemydumps?branch=master)
+-->
 
-
-Do you use [Flask](http://flask.pocoo.org>) with [SQLAlchemy](http://www.sqlalchemy.org/) and [Flask-Script](http://flask-script.readthedocs.org/) ? Wow, what a coincidence!
+Do you use [Flask](http://flask.pocoo.org>) with [SQLAlchemy](http://www.sqlalchemy.org/)? Wow, what a coincidence!
 
 This package lets you backup and restore all your data using [SQLAlchemy dumps() method](http://docs.sqlalchemy.org/en/latest/core/serializer.html).
 
 It is an easy way (one single command, I mean it) to save **all** the data stored in your database.
 
-You can save it locally or in a remote server via FTP.
-
+You can save it locally, to s3, or in a remote server via FTP.
+<!--
 > **WARNING** [**@baumatron**](https://github.com/baumatron)'ve [found an important bug](https://github.com/cuducos/alchemydumps/issues/13): at this time this package won't backup [non-standard mappings](http://docs.sqlalchemy.org/en/latest/orm/nonstandard_mappings.html), such as [many-to-many association tables](http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html#many-to-many). This is still an open issue and I have no expectation to fix is in the following weeks — **_pull requests_ are more tham welcomed**.
 
 > **I can't maintain this package anymore and I'd be happy to _donate_ it to anyone willing to take it further** Just drop a line ; )
-
+-->
 ## Install
 
 First install the package: `pip install Flask-AlchemyDumps`
